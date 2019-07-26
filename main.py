@@ -48,8 +48,6 @@ def exclude_proccessed_files(config, files):
         with open(filelistpath, 'r') as listfile:
             processed_files = listfile.readlines()
 
-        print(processed_files)
-
         for f in processed_files:
             file_dict[f.rstrip()]=True
 
@@ -67,15 +65,13 @@ def get_unprocceessed_files(config):
     inpath = config['main']['inputfolder']
     filter_types = str.split(config['main']['filetypes'],',')
     filter_types = tuple(('.'+type) for type in filter_types)
-    print(filter_types)
 
     listOfFiles = list()
     for (dirpath, inpath, filenames) in os.walk(inpath):
-        print('dirpath=', dirpath.split(os.path.sep))
         listOfFiles += [ os.path.join(os.path.sep.join(dirpath.split(os.path.sep)[1:]), file) for file in filenames]
 
-    print('Found file(s):',listOfFiles)
-    pass
+    listOfFiles = [f for f in listOfFiles if f[-3:] in filter_types or f[-4:] in filter_types ]
+
     files = exclude_proccessed_files(config,listOfFiles)
     return files
 
@@ -83,7 +79,6 @@ def get_unprocceessed_files(config):
 def add_to_excluded(config, filename):
     filelistpath = config['main']['processed_files_config']
     exists = os.path.isfile(os.path.join(os.getcwd(),filelistpath))
-    print(filelistpath, exists)
     if exists:
         with open(filelistpath, 'a') as listfile:
             listfile.write( filename + '\n')
@@ -92,7 +87,6 @@ def add_to_excluded(config, filename):
             listfile.write( filename + '\n')
 
     file_dict[filename]=True
-    print(filename)
 
 
 def proccess_files(confing, files):
@@ -109,11 +103,10 @@ def proccess_files(confing, files):
 
     for f in files:
         f_with_path = os.path.join(inpath, f)
-        out_file_name = os.path.splitext(f)[0]+'{}.jpg'.format(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-        print(out_file_name)
+        out_file_name = os.path.splitext(f)[0]+'.jpg'
+        print('Processing file:',out_file_name)
         im = Image.open(f_with_path)
         width, height = im.size
-        print('--------------- actual size ',width, height)
 
         if (width>height) :
             if(float(width)/float(height) > xratio/yratio):
@@ -125,7 +118,7 @@ def proccess_files(confing, files):
                 newsize = (width, width*xratio/yratio) # 
             else:
                 newsize = (height* yratio / xratio, height ) # 
-        print('--------------- new size ',newsize)
+
         deltax = abs(width-newsize[0])/2
         deltay = abs(height-newsize[1])/2
         # logo = Image.open(logo_path)
@@ -142,16 +135,19 @@ def proccess_files(confing, files):
 
         im.convert('RGB').crop((deltax,deltay,width-deltax,height-deltay)).save(os.path.join(outpath, out_file_name),  "JPEG", quality=100, optimize=True, progressive=True)
         add_to_excluded(config,f)
+        print('Done processing file:',out_file_name)
+
 
 if __name__ == "__main__":
     config = read_or_create_parser()
+    print('File types to search', str.split(config['main']['filetypes'],','))
+    print('Starting time=', datetime.datetime.now())
     while True:
         files = get_unprocceessed_files(config)
-        print(datetime.datetime.now())
         if files:
             proccess_files(config,files)
         else :
-            time.sleep(1)
-        time.sleep(1)
-
+            print('Still working ... time=', datetime.datetime.now())
+            print('No files to process.')
+            time.sleep(5)
     
