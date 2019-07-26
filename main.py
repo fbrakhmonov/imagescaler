@@ -71,7 +71,8 @@ def get_unprocceessed_files(config):
 
     listOfFiles = list()
     for (dirpath, inpath, filenames) in os.walk(inpath):
-        listOfFiles += [ os.path.join(''.join(dirpath.split(os.path.sep)[1:]), file) for file in filenames]
+        print('dirpath=', dirpath.split(os.path.sep))
+        listOfFiles += [ os.path.join(os.path.sep.join(dirpath.split(os.path.sep)[1:]), file) for file in filenames]
 
     print('Found file(s):',listOfFiles)
     pass
