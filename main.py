@@ -139,7 +139,7 @@ def proccess_files(confing, files):
                 if exc.errno != errno.EEXIST:
                     raise
 
-        im.crop((deltax,deltay,width-deltax,height-deltay)).save(os.path.join(outpath, out_file_name),  "JPEG", quality=100, optimize=True, progressive=True)
+        im.convert('RGB').crop((deltax,deltay,width-deltax,height-deltay)).save(os.path.join(outpath, out_file_name),  "JPEG", quality=100, optimize=True, progressive=True)
         add_to_excluded(config,f)
 
 if __name__ == "__main__":
