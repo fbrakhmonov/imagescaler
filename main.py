@@ -139,10 +139,8 @@ def proccess_files(confing, files):
         maxsizew = int(config['main']['mwidth'])
         maxsizeh = int(config['main']['mheight'])
         if (width>height) :
-            if(width>maxsizew) :
                 new_image.thumbnail((maxsizew,maxsizew),Image.ANTIALIAS)
         else:
-            if(height>maxsizeh):
                 new_image.thumbnail((maxsizeh,maxsizeh),Image.ANTIALIAS)
 
         new_image.save(os.path.join(outpath, out_file_name),  "JPEG", quality=100, optimize=True, progressive=True)
