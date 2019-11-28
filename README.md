@@ -7,7 +7,7 @@ Python service that scale images to given ratio with cropping method. Service ru
  - install libs
  the only lib for this project need that `PIL`. For this you need
  ```sh
-$ pip3 install PIL
+$ pip3 install pillow
  ```
  thats all you need
 
